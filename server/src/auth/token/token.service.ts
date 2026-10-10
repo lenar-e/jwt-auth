@@ -46,7 +46,7 @@ export class TokenService {
   }
   validateRefreshToken(token: string) {
     try {
-      return jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+      return jwt.verify(token, process.env.JWT_REFRESH_SECRET) as UserDto;
     } catch (e) {
       return null;
     }

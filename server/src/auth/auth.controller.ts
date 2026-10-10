@@ -65,12 +65,12 @@ export class AuthController {
   @Get('/refresh')
   async refresh(@Req() request: Request, @Res() response: Response) {
     const refreshToken = request.cookies['refreshToken'];
-    const nextTokens = await this.authService.refresh(refreshToken);
-    response.cookie('refreshToken', nextTokens, {
+    const userData = await this.authService.refresh(refreshToken);
+    response.cookie('refreshToken', userData.refreshToken, {
       maxAge: ONE_MONTH,
       httpOnly: true,
     });
-    response.json(nextTokens);
+    response.json(userData);
   }
 
   @Post('/reset-password')

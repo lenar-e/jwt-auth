@@ -1,32 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { Transporter } from 'nodemailer';
+
 @Injectable()
 export class MailService {
   private readonly transporter: Transporter;
+  private readonly from = process.env.MAIL_USER;
+  private readonly clientUrl = process.env.CLIENT_URL ?? 'http://127.0.0.1:5173';
+
   constructor() {
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'your.email@gmail.com',
-        pass: 'yourpassword',
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
       },
     });
   }
+
   async sendActivationMail(email: string, activationLink: string) {
     await this.transporter.sendMail({
-      from: 'your.email@gmail.com',
+      from: this.from,
       to: email,
-      subject: 'Активация аккаунта',
-      html: `<div><a href="http://127.0.0.1:5173/activate/${activationLink}" target="_blank">Активировать аккаунт</a></div>`,
+      subject: 'Account activation',
+      html: `<div><a href="${this.clientUrl}/activate/${activationLink}" target="_blank">Activate account</a></div>`,
     });
   }
+
   async sendResetPasswordMail(email: string, resetLink: string) {
     await this.transporter.sendMail({
-      from: 'your.email@gmail.com',
+      from: this.from,
       to: email,
-      subject: 'Восстановление пароля',
-      html: `<div><a href="http://127.0.0.1:5173/reset-password/${resetLink}" target="_blank">Задать новый пароль</a></div>`,
+      subject: 'Password reset',
+      html: `<div><a href="${this.clientUrl}/reset-password/${resetLink}" target="_blank">Set a new password</a></div>`,
     });
   }
 }

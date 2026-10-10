@@ -83,13 +83,14 @@ export class AuthService {
     const userData = this.tokenService.validateRefreshToken(refreshToken);
     const tokenFromDB = await this.tokenService.findToken(refreshToken);
 
-    if (!userData || tokenFromDB) {
+    if (!userData || !tokenFromDB) {
       throw new UnauthorizedException();
     }
 
-    const user = await this.userModel.findOne({
-      email: tokenFromDB.user.email,
-    });
+    const user = await this.userModel.findOne({ email: userData.email });
+    if (!user) {
+      throw new UnauthorizedException();
+    }
     return this.generateTokensResponse(user);
   }
 
